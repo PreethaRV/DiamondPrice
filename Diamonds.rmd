@@ -1,81 +1,110 @@
+---
+title: "Diamonds"
+author: "Preetha"
+date: "February 18, 2016"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
 # Load Diamonds
 
-
+```{r}
 library(ggplot2)
 data(diamonds)
 summary(diamonds)
-library("dplyr")
+library(dplyr)
+```
 
+#Data grouped by price, color and price , cut.
 
-#Data grouped by price vs color and price vs cut.
-
-
+```{r}
 by(diamonds$price,diamonds$color,sum)
 by(diamonds$price,diamonds$color,mean)
 
 by(diamonds$price,diamonds$cut,sum)
 by(diamonds$price,diamonds$cut,mean)
-
+```
 
 #Summary view of diamonds data based on carat and color variables
 
-
+```{r}
 summary(diamonds$color,diamonds$price)
-
+```
 
 #Boxplot view of color vs price. Its observed that the mean of the price is going higher in the alphabetic order of color names or color category.
 
-
+```{r}
 qplot(x = color, y=price,data = diamonds,
-      geom = 'boxplot',color=color)+
+geom = 'boxplot',color=color)+
   coord_cartesian(ylim = c(0,9000))
-
+```
 
 #Summary view of diamonds data based on carat and color variables
 
-
+```{r}
 summary(diamonds$cut,diamonds$price)
-
+```
 
 
 #Boxplot view of color vs price. Its observed that the median price of fair and premium cut diamonds are very close to each other though their prices vary drastically.
 
 
-
+```{r}
 
 qplot(x = cut, y=price,data = diamonds,
       geom = 'boxplot',color = cut)+
   coord_cartesian(ylim = c(0,7000))
+```
+
 
 # scatterplot of price vs x.
 # using the ggplot syntax.
+```{r}
  ggplot(aes(x = price, y = x), data = diamonds) +
   geom_point()
+```
+
+
  
 # correlation between price and x,y,z
  
+```{r}
+
+
  cor.test(diamonds$price,diamonds$x,methods = 'pearson')
-
-
  cor.test(diamonds$price,diamonds$y,methods = 'pearson')
  
  cor.test(diamonds$price,diamonds$z,methods = 'pearson')
+```
+
  
 # Create a simple scatter plot of price vs depth
  
+
+```{r}
 ggplot(aes(x = price, y = depth), data = diamonds) +
    geom_point()
+```
 
 # Change the code to make the transparency of the
 # points to be 1/100 of what they are now and mark
 # the x-axis every 2 units
+```{r}
 ggplot(data = diamonds, aes(x = depth, y = price)) + 
   geom_point(alpha=1/100)+
 scale_x_continuous(breaks = seq(0,70,2))
 
+```
+
+
 # Create a scatterplot of price vs carat
 # and omit the top 1% of price and carat
 # values.
+```{r}
+
 ggplot(data = diamonds, aes(x = carat, y = price)) + 
   geom_point()+
   xlim(c(0,3))+
@@ -83,10 +112,13 @@ ggplot(data = diamonds, aes(x = carat, y = price)) +
 
   scale_x_continuous(breaks = seq(0,70,2))
   
+```
+
 # Create a scatterplot of price vs. volume (x * y * z).
 # This is a very rough approximation for a diamond's volume.
-diamonds$volume <- diamonds$x*diamonds$y*diamonds$z
 
+```{r}
+diamonds$volume <- diamonds$x*diamonds$y*diamonds$z
 ggplot(data = diamonds, aes(x = volume, y = price)) + 
   geom_point()
 
@@ -100,12 +132,15 @@ cor.test(diamonds$price,diamonds$depth,methods = 'pearson')
 
 ggplot(data = subset(diamonds, (volume>0 & volume <=800)), aes(x = volume, y = price)) + 
   geom_point()
+```
+
+
 
 # Subset the data to exclude diamonds with a volume
 # greater than or equal to 800. Also, exclude diamonds
 # with a volume of 0. Adjust the transparency of the
 # points and add a linear model to the plot. 
-
+```{r}
 pricevolume <- diamonds %>% filter(volume >0 & volume<=800) %>% select(price,volume)
 
 cor.test(pricevolume$price,pricevolume$volume,methods = 'pearson')
@@ -113,6 +148,9 @@ cor.test(pricevolume$price,pricevolume$volume,methods = 'pearson')
 ggplot(data = subset(diamonds, (volume>0 & volume <=800)), aes(x = volume, y = price)) + 
   geom_point(alpha = 1/2)+
   geom_smooth()
+```
+
+
 
 # Use the function dplyr package
 # to create a new data frame containing
@@ -131,7 +169,7 @@ ggplot(data = subset(diamonds, (volume>0 & volume <=800)), aes(x = volume, y = p
 
 # where n is the number of diamonds in each
 # level of clarity.
-
+```{r}
 diamondsByClarity <- diamonds %>% group_by(clarity) %>% 
   summarise(
     mean_price = mean(price),
@@ -139,6 +177,9 @@ diamondsByClarity <- diamonds %>% group_by(clarity) %>%
     min_price = min(price),
     max_price = max(price),
     n= n())
+```
+
+
 
 
 # We’ve created summary data frames with the mean price
@@ -151,9 +192,9 @@ diamondsByClarity <- diamonds %>% group_by(clarity) %>%
 # gridExtra.
 
 
+```{r}
 diamonds_by_clarity <- group_by(diamonds, clarity)
 diamonds_mp_by_clarity <- summarise(diamonds_by_clarity, mean_price = mean(price))
-
 diamonds_by_color <- group_by(diamonds, color)
 diamonds_mp_by_color <- summarise(diamonds_by_color, mean_price = mean(price))
 
@@ -166,10 +207,13 @@ plot2 <- ggplot(data =diamonds_mp_by_color , aes(x = color, y = mean_price)) +
   geom_bar(stat='identity')
 
 grid.arrange(plot1,plot2)
+```
+
 
 # where n is the number of diamonds in each
 # level of cut.
 
+```{r}
 diamondsByCut <- diamonds %>% group_by(cut) %>% 
   summarise(
     mean_price = mean(price),
@@ -177,3 +221,4 @@ diamondsByCut <- diamonds %>% group_by(cut) %>%
     min_price = min(price),
     max_price = max(price),
     n= n())
+```
